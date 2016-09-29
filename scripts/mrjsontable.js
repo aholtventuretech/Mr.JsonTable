@@ -1,9 +1,7 @@
 (function ($) {
 
     $.fn.mrjsontablecolumn = function (options) {
-        var thisSelector = this.selector;
-        var opt = $.extend({}, $.fn.mrjsontablecolumn.defaults, options);
-        return opt;
+        return $.extend({}, $.fn.mrjsontablecolumn.defaults, options);
     };
 
     $.fn.mrjsontablecolumn.defaults = {
@@ -12,7 +10,8 @@
         data: "json_field",
         type: "string",
         sortable: true,
-        starthidden: false
+        starthidden: false,
+        showText: true
     };
 
     $.fn.mrjsontable = function (options) {
@@ -25,7 +24,7 @@
 
         var $visibleColumnsCBList = $("<div>").addClass("legend");
 
-        var $table = $("<table>").addClass(opts.tableClass);
+        var $table = $("<table>").addClass(opts.tableOptions.additionalClass);
 
         var $thead = $("<thead>");
         var $theadRow = $("<tr>");
@@ -33,8 +32,15 @@
         $.each(opts.columns, function (index, item) {
             var $th = $("<th>").attr("data-i", index);
 
-            var $cb = $("<input>", { "type": "checkbox", "id": "cb" + thisSelector + index, value: index, checked: !item.starthidden, "data-i": index }).bind("change", opts.onHiddenCBChange).appendTo($visibleColumnsCBList);
-            var $cblabel = $('<label />', { 'for': 'cb' + thisSelector + index, text: item.heading }).appendTo($visibleColumnsCBList);
+            $("<input>", {
+                "type": "checkbox",
+                "id": "cb" + thisSelector + index,
+                value: index,
+                checked: !item.starthidden,
+                "data-i": index }).bind("change", opts.onHiddenCBChange).appendTo($visibleColumnsCBList);
+            $('<label />', {
+                'for': 'cb' + thisSelector + index,
+                text: (item.showText ? item.heading : "") }).appendTo($visibleColumnsCBList);
 
             if (item.starthidden)
             {
@@ -42,7 +48,11 @@
             }
 
             if (item.sortable) {
-                $("<a>", { "class": "s-init", "href": "#", "data-i": index, "data-t": item.type }).text(item.heading).bind("click", opts.onSortClick).appendTo($th);
+                $("<a>", {
+                    "class": "s-init",
+                    "href": "#",
+                    "data-i": index,
+                    "data-t": item.type }).text(item.heading).bind("click", opts.onSortClick).appendTo($th);
             } else {
                 $("<span>").text(item.heading).appendTo($th);
             }
@@ -65,7 +75,7 @@
             $.each(opts.columns, function (c_index, c_item) {
 
                 var $td = $("<td>").text(item[c_item.data]).attr("data-i", c_index);
-	              $td.addClass(c_item.classname);
+                $td.addClass(c_item.classname);
 
                 if (c_item.starthidden) {
                     $td.hide();
@@ -83,7 +93,11 @@
         if (pagingNeeded) {
             var $pager = $("<div>").addClass("paging");
             for (var i = 0; i < Math.ceil(opts.data.length / opts.pageSize) ; i++) {
-                $("<a>", { "text": "Page " + (i + 1), "href": "#", "data-i": (i + 1), "class": "p-link" }).bind("click", opts.onPageClick).appendTo($pager);
+                $("<a>", {
+                    "text": "Page " + (i + 1),
+                    "href": "#",
+                    "data-i": (i + 1),
+                    "class": "p-link" }).bind("click", opts.onPageClick).appendTo($pager);
             }
             $mrjsontableContainer.append($pager).addClass("paged");
         }
@@ -98,8 +112,9 @@
         data: [],
         pageSize: 10,
         tableOptions: {
-          allowHideColumns: true,
-          displayColumnHeaders: true
+            allowHideColumns: true,
+            displayColumnHeaders: true,
+            additionalClass: ""
         },
 
         onHiddenCBChange: function () {
@@ -120,7 +135,7 @@
             var pageSize = $thisGrid.attr("data-ps");
             var page = $(this).attr("data-i");
 
-            $("tbody tr", $thisGrid).each(function (tr_index, tr_item) {
+            $("tbody tr", $thisGrid).each(function (tr_index) {
                 $(this).hide();
 
                 var pageStart = ((page - 1) * pageSize) + 1;
@@ -146,7 +161,7 @@
             var array = [];
 
             $("tbody tr", $thisGrid).each(function (tr_index, tr_item) {
-                var item = $("td", tr_item).eq(index)
+                var item = $("td", tr_item).eq(index);
 
                 var tr_id = item.parent().attr("data-i");
 
@@ -194,7 +209,7 @@
             }
 
             for (var i = 0; i < array.length; i++) {
-                var td = $("tr[data-i='" + array[i].tr_id + "']", $thisGrid)
+                var td = $("tr[data-i='" + array[i].tr_id + "']", $thisGrid);
 
                 td.detach();
 
