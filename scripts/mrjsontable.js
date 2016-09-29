@@ -40,7 +40,7 @@
                 "data-i": index }).bind("change", opts.onHiddenCBChange).appendTo($visibleColumnsCBList);
             $('<label />', {
                 'for': 'cb' + thisSelector + index,
-                text: (item.showText ? item.heading : "") }).appendTo($visibleColumnsCBList);
+                text: item.heading }).appendTo($visibleColumnsCBList);
 
             if (item.starthidden)
             {
@@ -52,9 +52,9 @@
                     "class": "s-init",
                     "href": "#",
                     "data-i": index,
-                    "data-t": item.type }).text(item.heading).bind("click", opts.onSortClick).appendTo($th);
+                    "data-t": item.type }).text((item.showText ? item.heading : "")).bind("click", opts.onSortClick).appendTo($th);
             } else {
-                $("<span>").text(item.heading).appendTo($th);
+                $("<span>").text((item.showText ? item.heading : "")).appendTo($th);
             }
 
             $th.appendTo($theadRow);
