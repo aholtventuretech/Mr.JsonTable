@@ -1,36 +1,3 @@
-
-/**
- * an implementation of mrjsontable that uses bootstrap grid rather than an html table.
- *
- * Columns are defined by the user, explicitly setting the number of bootstrap grid columns to give to each and every column.
- *
- * example column definition:
- *
- * var columnsExample = [
-     {
-         type: "row",
-         sizes: [ { type: "sm", size: "6" } ],
-         columns: [
-             { type: "column", sizes: [ { type: "sm", size: "3" } ], heading: '', data: 'header', dataType: 'string', classname: 'side-header' },
-             { type: "column", sizes: [ { type: "sm", size: "3" } ], heading: 'Column 1', data: 'col1', dataType: 'string', classname: 'column-1' },
-             { type: "column", sizes: [ { type: "sm", size: "3" } ], heading: 'Column 2', data: 'col2', dataType: 'string', classname: 'column-2' },
-             { type: "column", sizes: [ { type: "sm", size: "3" } ], heading: 'Column 3', data: 'col3', dataType: 'string', classname: 'column-3' }
-         ]
-     },
-     {
-         type: 'row',
-         sizes: [ { type: 'sm', size: '6' }],
-         columns: [
-             { type: "column", sizes: [ { type: "sm", size: "3" } ], heading: 'Column 4', data: 'col4', dataType: 'string', classname: 'column-4' },
-             { type: "column", sizes: [ { type: "sm", size: "3" } ], heading: 'Column 5', data: 'col5', dataType: 'string', classname: 'column-5' },
-             { type: "column", sizes: [ { type: "sm", size: "3" } ], heading: 'Column 6', data: 'col6', dataType: 'string', classname: 'column-6' },
-             { type: "column", sizes: [ { type: "sm", size: "3" } ], heading: 'Column 7', data: 'col7', dataType: 'string', classname: 'column-7' }
-         ]
-     }
- ];
- *
- *  The above example will create a column definition of 8 columns, evenly spaced accross all 12 bootstrap grid columns.
- */
 (function ($) {
 
     $.fn.mrjsonbootstrapgridcolumn = function (options) {
@@ -45,7 +12,8 @@
         type: "column",
         showText: true,
         columns: [],
-        sizes: []
+        sizes: [],
+        rowOptions: []
     };
 
     $.fn.mrjsonbootstrapgrid = function (options) {
@@ -60,7 +28,7 @@
                     });
                 } else if (item.type == 'column') {
                     var $col = $('<div>');
-                    $('<span style="width:100%;height:100%;display:inline-block;">').html(item.heading).appendTo($col);
+                    $col.html(item.heading);
                 }
                 $col.addClass(item.classname);
                 item.sizes.forEach(function (size) {
@@ -81,7 +49,7 @@
                         });
                     } else if (column.type == 'column') {
                         var $col = $('<div>');
-                        $('<span style="width:100%;height:100%;display:inline-block;">').text(item[column.data]).appendTo($col);
+                        $col.html(item[column.data]);
                     }
                     $col.addClass(column.classname);
                     column.sizes.forEach(function (size) {
@@ -100,6 +68,10 @@
         var $table = $("<div>").addClass('container-fluid').addClass(opts.tableOptions.additionalClass);
 
         var $thead = $("<div>").addClass('row');
+        var headRowOption = (!!opts.rowOptions ? opts.rowOptions[0] : undefined);
+        if(!!headRowOption) {
+            if(headRowOption.classname) $thead.addClass(headRowOption.classname);
+        }
 
         opts.columns.forEach(function(item) {
             setupColumn($thead, item);
@@ -107,8 +79,12 @@
 
         if(opts.tableOptions.displayColumnHeaders) $thead.appendTo($table);
 
-        opts.data.forEach(function (item) {
+        opts.data.forEach(function (item, idx) {
             var $tr = $('<div>').addClass('row');
+            var rowOption = (!!opts.rowOptions ? opts.rowOptions[idx + 1] : undefined);
+            if(!!rowOption) {
+                if(rowOption.classname) $tr.addClass(rowOption.classname);
+            }
             setupRow($tr, opts.columns, item);
             $tr.appendTo($table);
         });
@@ -130,5 +106,4 @@
             additionalClass: ""
         }
     };
-
 }(jQuery));
